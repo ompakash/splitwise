@@ -2,14 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-class SplitType(models.TextChoices):
-    EQUAL = 'equal', 'Equal'
-    EXACT = 'exact', 'Exact'
-    PERCENT = 'percent', 'Percent'
-
-class TransactionType(models.TextChoices):
-    OWE = 'owe', 'Owe'
-    LEND = 'lend', 'Lend'
 
 class User(models.Model):
     name = models.CharField(max_length=100)

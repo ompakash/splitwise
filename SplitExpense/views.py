@@ -64,7 +64,6 @@ class ExpenseAPI(APIView):
                 send_mail("Expense Notification",message,settings.EMAIL_HOST_USER,email_list,fail_silently=False)
             return Response({'message': 'Transaction updated successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
-            # print("EXCEPTION", str(e))
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -101,7 +100,6 @@ class ExpenseAPI(APIView):
             return Response({'message': 'Transaction updated successfully'}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            # print("EXCEPTION", str(e))
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
     def percent(self,amount_paid,user_owed,user_ids,split_amount):
@@ -136,7 +134,6 @@ class ExpenseAPI(APIView):
                 send_mail("Expense Notification",message,settings.EMAIL_HOST_USER,email_list,fail_silently=False)
             return Response({'message': 'Transaction updated successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
-            # print("EXCEPTION", str(e))
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -157,7 +154,6 @@ class ExpenseAPI(APIView):
 
         warn = False
         if split_type.lower() == 'exact':
-            # print(float(amount_paid))
             if len(user_ids) != len(split_amount):
                 warn = True
                 exception_warning =(f'The number of users owing {len(split_amount)}, does not equal the total number of users {len(user_ids)-1}')
@@ -192,14 +188,12 @@ class ExpenseAPI(APIView):
 
             
         except Exception as e:
-            # print("EXCEPTION", str(e))
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
     def get(self, request):
-        # Retrieve balances for the specified user or for all users
+        
         transactions = Transaction.objects.all()
-        # print(transactions)
         serializer = TransactionSerializer(transactions, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -226,7 +220,6 @@ class ShowDetails(APIView):
         user = get_object_or_404(User, name=user_id)
         existing_user = Transaction.objects.get(user_obj=user)
         if not existing_user:
-            # print(f'No balances for {user_id}')
             return {}
       
         transaction_map = {}
@@ -275,14 +268,10 @@ class ShowDetails(APIView):
         users_in_debt = {}
 
         if user_id:
-            # print('====' * 10)
-            # print(f"showing transactions for user: {user_id}")
 
             users_in_debt = self.calculate_transactions(user_id=user_id)
             
         else:
-            # print('====' * 10)
-            # print('showing transactions for all\n')
             user_objs = User.objects.filter(transaction__isnull=False).distinct()
             for user_id in user_objs:
                 for user_in_debt, owed_users in self.calculate_transactions(user_id=user_id).items():
@@ -291,15 +280,12 @@ class ShowDetails(APIView):
                     else:
                         users_in_debt[user_in_debt] = owed_users
 
-        # if not users_in_debt:
             
-            # print('No balances')
 
         final_list = []
         for user_in_debt, users_owed in users_in_debt.items():
             for user_owed, amount_owed in users_owed:
                 final_list.append(f'{user_in_debt} owes {user_owed}: {abs(amount_owed)}')
-                # print(f'{user_in_debt} owes {user_owed}: {abs(amount_owed)}')
         return set(final_list)
 
     def get(self,request):
