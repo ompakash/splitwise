@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-
+import logging
+import os   
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,6 +28,26 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+    },
+}
 
 # Application definition
 
@@ -38,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'SplitExpense',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -135,3 +157,12 @@ EMAIL_HOST_USER = "cognotesting100@gmail.com"
 EMAIL_HOST_PASSWORD = "hxal izgz ogrw sfso"
 # settings.py
 
+
+
+CRONJOBS = [
+    ('*/1 * * * *', 'SplitExpense.cron.send_mail_weekly')
+]
+
+# CRONJOBS = [
+#     ('0 0 * * 0', 'SplitExpense.cron.print_hello'),
+# ]

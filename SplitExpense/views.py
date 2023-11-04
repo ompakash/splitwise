@@ -285,8 +285,10 @@ class ShowDetails(APIView):
         final_list = []
         for user_in_debt, users_owed in users_in_debt.items():
             for user_owed, amount_owed in users_owed:
-                final_list.append(f'{user_in_debt} owes {user_owed}: {abs(amount_owed)}')
-        return set(final_list)
+                msg = str(f'{user_in_debt} owes {user_owed}: {abs(amount_owed)}')      
+                if msg not in final_list:
+                    final_list.append(msg)
+        return final_list
 
     def get(self,request):
         all_details = self.show()
